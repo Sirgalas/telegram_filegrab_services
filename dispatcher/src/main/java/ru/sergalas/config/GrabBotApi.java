@@ -12,7 +12,7 @@ import ru.sergalas.bot.TelegramBot;
 public class GrabBotApi {
 
     @Bean
-    public TelegramBotsApi telefrabBotApi(TelegramBot bot) throws TelegramApiException {
+    public TelegramBotsApi telegramFilegrabBotApi(TelegramBot bot) throws TelegramApiException {
         var api = new TelegramBotsApi(DefaultBotSession.class);
         api.registerBot(bot);
         return api;
