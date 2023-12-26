@@ -10,6 +10,7 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>dispatcher</module>
+        <module>common-rabbitmq</module>
     </modules>
 
     <properties>
@@ -18,7 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <telegrambot.starter.version>6.7.0</telegrambot.starter.version>
         <log4j.version>1.2.17</log4j.version>
-        <lombok.servion>1.18.22</lombok.servion>
+        <lombok.servion>1.18.30</lombok.servion>
     </properties>
 
     <parent
