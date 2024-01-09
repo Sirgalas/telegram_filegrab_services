@@ -1,0 +1,10 @@
+server:
+  port: 9295
+spring:
+  rabbitmq:
+    host: localhost
+    port: 56721
+    username: rabbitmq
+    password: password
+
+

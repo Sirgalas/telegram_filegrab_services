@@ -33,13 +33,11 @@ public class UpdateController {
             log.error("Received update is null");
             return;
         }
-
         if(update.getMessage() != null) {
             messageHandler.distributeMessage(update);
         } else {
             log.error("Received unsupported message type " + update);
         }
     }
-
 
 }

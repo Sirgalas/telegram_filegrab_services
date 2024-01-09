@@ -1,0 +1,20 @@
+version: "3.7"
+
+services:
+  rabbitmq:
+    build:
+      context: ./docker
+      dockerfile: rabbitmq/rabbit.dockerfile
+      args:
+        rabbitmq_image: ${RABBITMQ_IMAGE}
+    environment:
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+    networks: [ internal ]
+    ports: [ "${RABBITMQ_PORT}:5672", "${RABBITMQ_MANAGE_PORT}:15672" ]
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+networks:
+  internal:

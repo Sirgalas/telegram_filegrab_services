@@ -1,5 +1,6 @@
 package ru.sergalas.handler;
 
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -9,6 +10,7 @@ import ru.sergalas.service.UpdateProducer;
 
 import static ru.sergalas.model.RabbitQueue.*;
 
+@Component
 public class MessageHandler {
 
 
@@ -71,7 +73,7 @@ public class MessageHandler {
                 "Фаил получен! Дождитесь окончание обработки");
         setView(sendMessage);
     }
-    private void setView(SendMessage sendMessage) {
+    public void setView(SendMessage sendMessage) {
         telegramBot.sendAnswerMessage(sendMessage);
     }
 }
