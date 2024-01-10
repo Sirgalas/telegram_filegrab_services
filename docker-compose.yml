@@ -16,5 +16,23 @@ services:
     volumes:
       - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
       - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+  postgres:
+    build:
+      context: ./docker
+      dockerfile: dev/postgres/postgres.dockerfile
+      args:
+        postgres_image: ${POSTGRES_IMAGE}
+    environment:
+      POSTGRES_VERSION: ${POSTGRES_VERSION}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    networks: [ internal ]
+    ports: [ "${POSTGRES_PORT}:5432" ]
+    healthcheck:
+      test: pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+      interval: 10s
+      timeout: 5s
+      retries: 5
 networks:
   internal:
