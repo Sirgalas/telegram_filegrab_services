@@ -19,7 +19,7 @@ services:
   postgres:
     build:
       context: ./docker
-      dockerfile: dev/postgres/postgres.dockerfile
+      dockerfile: postgres/postgres.dockerfile
       args:
         postgres_image: ${POSTGRES_IMAGE}
     environment:
