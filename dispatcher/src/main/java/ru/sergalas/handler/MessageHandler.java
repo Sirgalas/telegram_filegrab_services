@@ -31,15 +31,15 @@ public class MessageHandler {
 
     public void distributeMessage(Update update) {
         Message message = update.getMessage();
-        if(message.getText() != null) {
+        if(message.hasText()) {
             processTextMessage(update);
             return;
         }
-        if(message.getDocument() != null) {
+        if(message.hasDocument()) {
             processDocMessage(update);
             return;
         }
-        if(message.getPhoto() != null) {
+        if(message.hasPhoto()) {
             processPhotoMessage(update);
             return;
         }
