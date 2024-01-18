@@ -36,7 +36,6 @@ public class MainServiceImpl implements MainService {
     @Override
     public void processTextMessage(Update update) {
         saveRawData(update);
-        AppUser appUser = findOrSaveUser(update);
         String output =  getOutput(update);
         Long chatId = update.getMessage().getChatId();
         sendAnswer(output, chatId);
