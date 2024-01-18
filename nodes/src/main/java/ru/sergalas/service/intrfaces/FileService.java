@@ -1,6 +1,6 @@
 package ru.sergalas.service.intrfaces;
 
-import org.apache.logging.log4j.message.Message;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.sergalas.entity.AppDocument;
 
 public interface FileService {

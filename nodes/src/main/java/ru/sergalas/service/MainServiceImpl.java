@@ -6,11 +6,15 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
+import ru.sergalas.entity.AppDocument;
 import ru.sergalas.entity.AppUser;
 import ru.sergalas.entity.RawData;
 import ru.sergalas.enums.UserState;
+import ru.sergalas.exceptions.UploadFileException;
 import ru.sergalas.repository.AppUserRepository;
 import ru.sergalas.repository.RawDataRepository;
+import ru.sergalas.service.enums.ServiceCommand;
+import ru.sergalas.service.intrfaces.FileService;
 import ru.sergalas.service.intrfaces.MainService;
 import ru.sergalas.service.intrfaces.ProducerService;
 
@@ -26,6 +30,8 @@ public class MainServiceImpl implements MainService {
     private final RawDataRepository repository;
     private final ProducerService producerService;
     private final AppUserRepository appUserRepository;
+    private final FileService fileService;
+
 
     @Override
     public void processTextMessage(Update update) {
@@ -44,8 +50,17 @@ public class MainServiceImpl implements MainService {
         if(isNotAllowToSendContent(chatId, appUser)) {
             return;
         }
-        String answer = "Документ успешно загружен! Ссылка для скачивания: http://test.ru/get-doc/777";
-        sendAnswer(answer, chatId);
+        try {
+            AppDocument document = fileService.processDoc(update.getMessage());
+            String answer = "Документ успешно загружен! "
+                              + "Ссылка для скачивания: http://test.ru/get-doc/777";
+            sendAnswer(answer, chatId);
+        } catch (UploadFileException e) {
+            log.error(e);
+            String error = "К сожалению, загрузка файла не удалась. Повторите попытку позже.";
+            sendAnswer(error, chatId);
+        }
+
     }
 
     @Override
@@ -56,7 +71,8 @@ public class MainServiceImpl implements MainService {
         if (isNotAllowToSendContent(chatId, appUser)) {
             return;
         }
-        String answer = "Фото успешно загружено! Ссылка для скачивания: http://test.ru/get-photo/777";
+        String answer = "Фото успешно загружено!"
+                            + "Ссылка для скачивания: http://test.ru/get-photo/777";
         sendAnswer(answer, chatId);
     }
 
@@ -65,8 +81,8 @@ public class MainServiceImpl implements MainService {
         AppUser appUser = findOrSaveUser(update);
         String text = update.getMessage().getText();
         UserState userState = appUser.getState();
-
-        if(CANCEL.equals(text)) {
+        var serviceCommand = ServiceCommand.fromValue(text);
+        if(CANCEL.equals(serviceCommand)) {
            return cancelProcess(appUser);
         }
         if(BASIC_STATE.equals(userState)) {
@@ -76,7 +92,6 @@ public class MainServiceImpl implements MainService {
         log.error("Unknown user state: " + userState);
         return  "Неизвестная ошибка! Введите /cancel и попробуйте снова!";
     }
-
 
     private boolean isNotAllowToSendContent(Long chatId, AppUser appUser) {
         UserState userState = appUser.getState();
@@ -91,7 +106,6 @@ public class MainServiceImpl implements MainService {
         }
         return false;
     }
-
 
     private void sendAnswer(String output, Long chatId) {
         SendMessage sendMessage = new SendMessage();
