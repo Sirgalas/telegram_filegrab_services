@@ -1,11 +1,6 @@
 server:
   port: 9295
 spring:
-  rabbitmq:
-    host: localhost
-    port: 56721
-    username: rabbitmq
-    password: password
   datasource:
     url: jdbc:postgresql://localhost:54329/telegram
     username: telegram-user
@@ -13,8 +8,4 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     generate-ddl: true
-token:
-service:
-  file_info:
-    uri
 
