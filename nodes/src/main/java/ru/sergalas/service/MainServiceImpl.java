@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.sergalas.entity.AppDocument;
+import ru.sergalas.entity.AppPhoto;
 import ru.sergalas.entity.AppUser;
 import ru.sergalas.entity.RawData;
 import ru.sergalas.enums.UserState;
@@ -70,9 +71,16 @@ public class MainServiceImpl implements MainService {
         if (isNotAllowToSendContent(chatId, appUser)) {
             return;
         }
-        String answer = "Фото успешно загружено!"
-                            + "Ссылка для скачивания: http://test.ru/get-photo/777";
-        sendAnswer(answer, chatId);
+        try{
+            AppPhoto photo = fileService.processPhoto(update.getMessage());
+            String answer = "Фото успено загружено! "
+                    + "Ссылка для скачивания: http://test.ru/get-photo/777";
+            sendAnswer(answer, chatId);
+        }catch (UploadFileException e) {
+            log.error(e);
+            String error = "К сожалению, загрузка фото не удалась. Повторите попытку позже.";
+            sendAnswer(error,chatId);
+        }
     }
 
     private String getOutput(Update update) {
