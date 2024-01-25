@@ -14,6 +14,7 @@
         <module>nodes</module>
         <module>common-jpa</module>
         <module>rest-service</module>
+        <module>mail-service</module>
     </modules>
 
     <properties>
