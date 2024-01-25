@@ -6,7 +6,7 @@ import ru.sergalas.entity.AppPhoto;
 import ru.sergalas.entity.BinaryContent;
 
 public interface FileService {
-    AppDocument getDocument(String id);
-    AppPhoto getPhoto(String id);
+    AppDocument getDocument(String docId);
+    AppPhoto getPhoto(String photoId);
     FileSystemResource getFileSystemResource(BinaryContent binaryContent);
 }

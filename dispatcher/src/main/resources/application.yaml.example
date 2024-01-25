@@ -1,0 +1,13 @@
+bot:
+  token:
+  name:
+server:
+  port: 9294
+spring:
+  rabbitmq:
+    host: localhost
+    port: 56721
+    username: rabbitmq
+    password: password
+
+
