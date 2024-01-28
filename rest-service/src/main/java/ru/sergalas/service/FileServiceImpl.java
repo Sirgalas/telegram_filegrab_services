@@ -11,6 +11,7 @@ import ru.sergalas.entity.BinaryContent;
 import ru.sergalas.repository.AppDocumentRepository;
 import ru.sergalas.repository.AppPhotoRepository;
 import ru.sergalas.service.interfaces.FileService;
+import ru.sergalas.utils.CryptoTool;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,16 +23,23 @@ public class FileServiceImpl implements FileService {
 
     private final AppDocumentRepository appDocumentRepository;
     private final AppPhotoRepository appPhotoRepository;
+    private final CryptoTool cryptoTool;
 
     @Override
-    public AppDocument getDocument(String docId) {
-       Long id = Long.parseLong(docId);
+    public AppDocument getDocument(String hash) {
+       var id = cryptoTool.idOf(hash);
+       if(id == null) {
+           return null;
+       }
        return appDocumentRepository.findById(id).orElse(null);
     }
 
     @Override
-    public AppPhoto getPhoto(String photoId) {
-        Long id = Long.parseLong(photoId);
+    public AppPhoto getPhoto(String hash) {
+        Long id = cryptoTool.idOf(hash);
+        if(id == null) {
+            return null;
+        }
         return appPhotoRepository.findById(id).orElse(null);
     }
 

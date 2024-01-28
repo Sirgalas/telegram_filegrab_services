@@ -14,6 +14,7 @@ import ru.sergalas.enums.UserState;
 import ru.sergalas.exceptions.UploadFileException;
 import ru.sergalas.repository.AppUserRepository;
 import ru.sergalas.repository.RawDataRepository;
+import ru.sergalas.service.enums.LinkType;
 import ru.sergalas.service.enums.ServiceCommand;
 import ru.sergalas.service.intrfaces.FileService;
 import ru.sergalas.service.intrfaces.MainService;
@@ -52,8 +53,9 @@ public class MainServiceImpl implements MainService {
         }
         try {
             AppDocument document = fileService.processDoc(update.getMessage());
+            String link = fileService.generateLink(document.getId(), LinkType.GET_DOC);
             String answer = "Документ успешно загружен! "
-                              + "Ссылка для скачивания: http://test.ru/get-doc/777";
+                              + "Ссылка для скачивания: " + link;
             sendAnswer(answer, chatId);
         } catch (UploadFileException e) {
             log.error(e);
@@ -73,8 +75,9 @@ public class MainServiceImpl implements MainService {
         }
         try{
             AppPhoto photo = fileService.processPhoto(update.getMessage());
+            String link = fileService.generateLink((photo.getId()), LinkType.GET_PHOTO);
             String answer = "Фото успено загружено! "
-                    + "Ссылка для скачивания: http://test.ru/get-photo/777";
+                    + "Ссылка для скачивания: " + link;
             sendAnswer(answer, chatId);
         }catch (UploadFileException e) {
             log.error(e);

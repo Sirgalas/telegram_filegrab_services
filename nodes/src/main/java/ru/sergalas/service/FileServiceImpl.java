@@ -16,6 +16,7 @@ import ru.sergalas.entity.BinaryContent;
 import ru.sergalas.exceptions.UploadFileException;
 import ru.sergalas.repository.AppDocumentRepository;
 import ru.sergalas.repository.BinaryContentRepository;
+import ru.sergalas.service.enums.LinkType;
 import ru.sergalas.service.intrfaces.FileService;
 import org.json.JSONObject;
 
@@ -24,6 +25,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import ru.sergalas.repository.AppPhotoRepository;
+import ru.sergalas.utils.CryptoTool;
 
 @Log4j
 @Service
@@ -36,10 +38,13 @@ public class FileServiceImpl implements FileService {
     private String fileInfoUri;
     @Value("${service.file_storage.uri}")
     private String fileStorageUri;
+    @Value("${link.address}")
+    private String linkAddress;
 
     private final AppDocumentRepository appDocumentRepository;
     private final BinaryContentRepository binaryContentRepository;
     private final AppPhotoRepository photoRepository;
+    private final CryptoTool cryptoTool;
 
 
     @Override
@@ -57,7 +62,9 @@ public class FileServiceImpl implements FileService {
     }
 
     public AppPhoto processPhoto(Message telegramMessage) {
-        PhotoSize telegramPhoto = telegramMessage.getPhoto().get(0);
+        int photoSizeCount = telegramMessage.getPhoto().size();
+        int photoIndex = photoSizeCount > 1 ? telegramMessage.getPhoto().size() -1: 0;
+        PhotoSize telegramPhoto = telegramMessage.getPhoto().get(photoIndex);
         String fileId = telegramPhoto.getFileId();
         ResponseEntity<String> response = getFilePath(fileId);
         if(response.getStatusCode() == HttpStatus.OK) {
@@ -134,5 +141,11 @@ public class FileServiceImpl implements FileService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String generateLink(Long docId, LinkType linkType) {
+        var hash = cryptoTool.hasOf(docId);
+        return "http://" + linkAddress + "/" + linkType + "?id=" + hash;
     }
 }
