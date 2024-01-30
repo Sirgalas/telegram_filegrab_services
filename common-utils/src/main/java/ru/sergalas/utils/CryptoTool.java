@@ -7,8 +7,8 @@ public class CryptoTool {
     private final Hashids hashids;
 
     public CryptoTool(String salt) {
-        int minHAshLength = 10;
-        this.hashids = new Hashids(salt, minHAshLength);
+        int minHashLength = 10;
+        this.hashids = new Hashids(salt, minHashLength);
     }
 
     public String hasOf(Long docId) {

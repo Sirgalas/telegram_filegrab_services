@@ -1,0 +1,11 @@
+server:
+  port: 9296
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:54329/telegram
+    username: telegram-user
+    password: password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    generate-ddl: true
+salt:

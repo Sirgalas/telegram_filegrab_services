@@ -91,12 +91,12 @@ public class MainServiceImpl implements MainService {
         AppUser appUser = findOrSaveUser(update);
         String text = update.getMessage().getText();
         UserState userState = appUser.getState();
-        var serviceCommand = ServiceCommand.fromValue(text);
+        ServiceCommand serviceCommand = ServiceCommand.fromValue(text);
         if(CANCEL.equals(serviceCommand)) {
            return cancelProcess(appUser);
         }
         if(BASIC_STATE.equals(userState)) {
-            return processServiceCommand(appUser, text);
+            return processServiceCommand(appUser, serviceCommand);
         }
         if(WAIT_FOR_EMAIL_STATE.equals(userState)) {}
         log.error("Unknown user state: " + userState);
@@ -110,9 +110,10 @@ public class MainServiceImpl implements MainService {
             sendAnswer(error,chatId);
             return true;
         }
-        if(BASIC_STATE.equals(userState)) {
+        if(!BASIC_STATE.equals(userState)) {
             String error = "Отмените текущую команду с помощью /cancel для отправки файлов.";
             sendAnswer(error,chatId);
+            return true;
         }
         return false;
     }
@@ -124,7 +125,7 @@ public class MainServiceImpl implements MainService {
         producerService.producerAnswer(sendMessage);
     }
 
-    private String processServiceCommand(AppUser appUser, String command) {
+    private String processServiceCommand(AppUser appUser, ServiceCommand command) {
 
         if (REGISTRATION.equals(command)) {
             //TODO добавить регистрацию
