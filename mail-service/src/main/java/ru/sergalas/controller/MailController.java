@@ -17,7 +17,7 @@ public class MailController {
     private final MailSenderService mailSenderService;
 
     @PostMapping("/send")
-    public ResponseEntity<?> sendActivationMAil(@RequestBody MailParamsData mailParamsData) {
+    public ResponseEntity<?> sendActivationMail(@RequestBody MailParamsData mailParamsData) {
         mailSenderService.send(mailParamsData);
         return ResponseEntity.ok().build();
     }

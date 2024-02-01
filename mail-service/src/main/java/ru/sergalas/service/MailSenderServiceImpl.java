@@ -21,7 +21,7 @@ public class MailSenderServiceImpl implements MailSenderService {
     @Override
     public void send(MailParamsData mailParamsData) {
         String subject = "Активация учетной записи";
-        String messageBody =  getActivationMAilBody(mailParamsData.getId());
+        String messageBody =  getActivationMailBody(mailParamsData.getId());
         String emailTo = mailParamsData.getEmailTo();
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
@@ -33,7 +33,7 @@ public class MailSenderServiceImpl implements MailSenderService {
         javaMailSender.send(mailMessage);
     }
 
-    private String getActivationMAilBody(String id) {
+    private String getActivationMailBody(String id) {
         String msg = String.format("Для завершения регистрации перейдите по ссылке:\n%s",
                 activationServiceUri);
         return msg.replace("{id}", id);
