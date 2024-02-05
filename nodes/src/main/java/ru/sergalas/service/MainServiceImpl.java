@@ -16,9 +16,12 @@ import ru.sergalas.repository.AppUserRepository;
 import ru.sergalas.repository.RawDataRepository;
 import ru.sergalas.service.enums.LinkType;
 import ru.sergalas.service.enums.ServiceCommand;
+import ru.sergalas.service.intrfaces.AppUserService;
 import ru.sergalas.service.intrfaces.FileService;
 import ru.sergalas.service.intrfaces.MainService;
 import ru.sergalas.service.intrfaces.ProducerService;
+
+import java.util.Optional;
 
 import static ru.sergalas.enums.UserState.BASIC_STATE;
 import static ru.sergalas.enums.UserState.WAIT_FOR_EMAIL_STATE;
@@ -33,6 +36,7 @@ public class MainServiceImpl implements MainService {
     private final ProducerService producerService;
     private final AppUserRepository appUserRepository;
     private final FileService fileService;
+    private final AppUserService appUserService;
 
 
     @Override
@@ -98,7 +102,9 @@ public class MainServiceImpl implements MainService {
         if(BASIC_STATE.equals(userState)) {
             return processServiceCommand(appUser, serviceCommand);
         }
-        if(WAIT_FOR_EMAIL_STATE.equals(userState)) {}
+        if(WAIT_FOR_EMAIL_STATE.equals(userState)) {
+            return appUserService.setEmail(appUser,text);
+        }
         log.error("Unknown user state: " + userState);
         return  "Неизвестная ошибка! Введите /cancel и попробуйте снова!";
     }
@@ -157,21 +163,20 @@ public class MainServiceImpl implements MainService {
 
     private AppUser findOrSaveUser(Update update) {
         User telegramUser = update.getMessage().getFrom();
-        AppUser persistentUser = appUserRepository
-                .findAppUsesByTelegramUserId(telegramUser.getId());
-        if(persistentUser == null) {
+        Optional<AppUser> optional = appUserRepository.findByTelegramUserId(telegramUser.getId());
+        if(optional.isEmpty()) {
             // сделать через dto и маперы
             AppUser transientUser = AppUser.builder()
                     .telegramUserId(telegramUser.getId())
                     .username(telegramUser.getUserName())
                     .firstName(telegramUser.getFirstName())
                     .lastName(telegramUser.getLastName())
-                    .isActive(true)
+                    .isActive(false)
                     .state(BASIC_STATE)
                     .build();
             return appUserRepository.save(transientUser);
         }
-        return persistentUser;
+        return optional.get();
     }
 
     private void saveRawData(Update update) {
