@@ -1,6 +1,8 @@
 package ru.sergalas.controller;
 
 
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.springframework.core.io.FileSystemResource;
@@ -15,6 +17,8 @@ import ru.sergalas.entity.AppPhoto;
 import ru.sergalas.entity.BinaryContent;
 import ru.sergalas.service.interfaces.FileService;
 
+import java.io.IOException;
+
 @Log4j
 @RequestMapping("/file")
 @RestController
@@ -23,36 +27,44 @@ public class FileController {
     private final FileService fileService;
 
     @GetMapping("/get-doc")
-    public ResponseEntity<?> getDoc(@RequestParam("id") String id) {
+    public void getDoc(@RequestParam("id") String id, HttpServletResponse response) {
         AppDocument doc = fileService.getDocument(id);
         if(doc == null) {
-            return ResponseEntity.badRequest().build();
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return ;
         }
+        response.setContentType(MediaType.parseMediaType(doc.getMimeType()).toString());
+        response.setHeader("Content-disposition","attachment; filename=" + doc.getDocName());
+        response.setStatus(HttpServletResponse.SC_OK);
         BinaryContent binaryContent = doc.getBinaryContent();
-        FileSystemResource fileSystemResource = fileService.getFileSystemResource(binaryContent);
-        if(fileSystemResource == null) {
-            return ResponseEntity.internalServerError().build();
+        try{
+            ServletOutputStream out = response.getOutputStream();
+            out.write(binaryContent.getFileAsArrayOfBytes());
+            out.close();
+        } catch (IOException e) {
+            log.error(e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(doc.getMimeType()))
-                .header("Content-disposition", "attachment; filename=" + doc.getDocName())
-                .body(fileSystemResource);
     }
 
     @GetMapping("/get-photo")
-    public ResponseEntity<?> getPhoto(@RequestParam("id") String id) {
+    public void getPhoto(@RequestParam("id") String id, HttpServletResponse response) {
         AppPhoto photo = fileService.getPhoto(id);
         if(photo == null) {
-            return ResponseEntity.badRequest().build();
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
         }
         BinaryContent binaryContent = photo.getBinaryContent();
-        FileSystemResource fileSystemResource = fileService.getFileSystemResource(binaryContent);
-        if(fileSystemResource == null) {
-            return ResponseEntity.internalServerError().build();
+        response.setContentType(MediaType.IMAGE_JPEG.toString());
+        response.setHeader("Content-disposition","attachment;");
+        response.setStatus(HttpServletResponse.SC_OK);
+        try{
+            ServletOutputStream out = response.getOutputStream();
+            out.write(binaryContent.getFileAsArrayOfBytes());
+            out.close();
+        } catch (IOException e) {
+            log.error(e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-        return ResponseEntity.ok().
-                contentType(MediaType.IMAGE_JPEG)
-                .header("Content-disposition", "attachment;")
-                .body(fileSystemResource);
     }
 }

@@ -1,4 +1,4 @@
-package ru.sergalas.controller;
+package ru.sergalas.processors;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
@@ -12,7 +12,7 @@ import ru.sergalas.service.UpdateProducer;
 @Controller
 @Log4j
 @RequiredArgsConstructor
-public class UpdateController {
+public class UpdateProcessor {
 
     private TelegramBot bot;
 

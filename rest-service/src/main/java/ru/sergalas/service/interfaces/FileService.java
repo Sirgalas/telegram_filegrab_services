@@ -8,5 +8,4 @@ import ru.sergalas.entity.BinaryContent;
 public interface FileService {
     AppDocument getDocument(String docId);
     AppPhoto getPhoto(String photoId);
-    FileSystemResource getFileSystemResource(BinaryContent binaryContent);
 }
